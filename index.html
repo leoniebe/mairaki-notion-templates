@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0C0824;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .widget {
+    width: 100%;
+    height: 100%;
+    padding: 28px 36px;
+    background: linear-gradient(135deg, #0C0824 0%, #1a1040 50%, #0C0824 100%);
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .widget::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(142, 197, 252, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 50%, rgba(204, 129, 252, 0.06) 0%, transparent 50%);
+    animation: shimmer 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(2%, -1%) rotate(1deg); }
+  }
+
+  .stars {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(250, 250, 250, 0.4);
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+
+  .star:nth-child(1) { top: 15%; left: 85%; animation-delay: 0s; }
+  .star:nth-child(2) { top: 25%; left: 92%; animation-delay: 1.2s; width: 1.5px; height: 1.5px; }
+  .star:nth-child(3) { top: 60%; left: 88%; animation-delay: 2.1s; }
+  .star:nth-child(4) { top: 40%; left: 95%; animation-delay: 0.7s; width: 1px; height: 1px; }
+  .star:nth-child(5) { top: 75%; left: 82%; animation-delay: 1.8s; width: 1.5px; height: 1.5px; }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.8; }
+  }
+
+  .content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .greeting {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 1.65rem;
+    color: #FAFAFA;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .greeting .icon {
+    display: inline-block;
+    margin-right: 6px;
+    font-style: normal;
+  }
+
+  .date-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .date {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(142, 197, 252, 0.85);
+    letter-spacing: 0.02em;
+  }
+
+  .time {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(204, 129, 252, 0.8);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .divider {
+    width: 1px;
+    height: 14px;
+    background: rgba(136, 141, 252, 0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="stars">
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+  </div>
+  <div class="content">
+    <div class="greeting">
+      <span class="icon" id="icon"></span>
+      <span id="greeting"></span>
+    </div>
+    <div class="date-row">
+      <span class="date" id="date"></span>
+      <div class="divider"></div>
+      <span class="time" id="time"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const dagen = ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'];
+  const maanden = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
+
+  function getGreeting(hour) {
+    if (hour >= 6 && hour < 12) return { text: 'Goedemorgen, Leonie', icon: '☀️' };
+    if (hour >= 12 && hour < 18) return { text: 'Goedemiddag, Leonie', icon: '🌤️' };
+    if (hour >= 18 && hour < 22) return { text: 'Goedenavond, Leonie', icon: '🌙' };
+    return { text: 'Goedenacht, Leonie', icon: '✨' };
+  }
+
+  function update() {
+    const now = new Date();
+    const hour = now.getHours();
+    const { text, icon } = getGreeting(hour);
+
+    document.getElementById('icon').textContent = icon;
+    document.getElementById('greeting').textContent = text;
+
+    const dag = dagen[now.getDay()];
+    const datum = now.getDate();
+    const maand = maanden[now.getMonth()];
+    const jaar = now.getFullYear();
+    document.getElementById('date').textContent = `${dag} ${datum} ${maand} ${jaar}`;
+
+    const uren = String(now.getHours()).padStart(2, '0');
+    const minuten = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('time').textContent = `${uren}:${minuten}`;
+  }
+
+  update();
+  setInterval(update, 30000);
+</script>
+
+</body>
+</html>
